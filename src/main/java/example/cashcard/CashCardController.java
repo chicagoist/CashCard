@@ -1,11 +1,10 @@
 package example.cashcard;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Optional;
 
 @RestController
@@ -36,6 +35,16 @@ class CashCardController {
         } else {
             return ResponseEntity.notFound().build();
         }*/
+    }
+
+    @PostMapping
+    private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCashCardRequest, UriComponentsBuilder ucb) {
+        CashCard savedCashCard = cashCardRepository.save(newCashCardRequest);
+        URI locationOfNewCashCard = ucb
+                .path("cashcards/{id}")
+                .buildAndExpand(savedCashCard.id())
+                .toUri();
+        return ResponseEntity.created(locationOfNewCashCard).build();
     }
 
 
@@ -77,3 +86,13 @@ the same, but our data is not!
 
 Thanks again, Spring!
 * */
+
+/*
+8: Summary
+In this lab you learned how simple it is to add another endpoint to our API
+-- the POST endpoint. You also learned how to use that endpoint to create and
+ save a new CashCard to our database using Spring Data. Not only that, but
+ the endpoint accurately implements the HTTP POST specification, which we
+ verified using test driven development. The API is starting to be useful!
+
+ */
