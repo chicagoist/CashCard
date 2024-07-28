@@ -1,10 +1,15 @@
 package example.cashcard;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -47,7 +52,22 @@ class CashCardController {
         return ResponseEntity.created(locationOfNewCashCard).build();
     }
 
+//    @GetMapping()
+//    private ResponseEntity<Iterable<CashCard>> findAll() {
+//        return ResponseEntity.ok(cashCardRepository.findAll());
+//    }
 
+    @GetMapping
+    private ResponseEntity<List<CashCard>> findAll(Pageable pageable) {
+        Page<CashCard> page = cashCardRepository.findAll(
+                PageRequest.of(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        pageable.getSortOr(Sort.by(Sort.Direction.ASC,
+                                "amount"))
+                ));
+        return ResponseEntity.ok(page.getContent());
+    }
 }
 
 /*
@@ -96,3 +116,15 @@ In this lab you learned how simple it is to add another endpoint to our API
  verified using test driven development. The API is starting to be useful!
 
  */
+
+/*
+9: Summary
+In this lab, we implemented a "GET many" endpoint and added sorting and
+pagination. These accomplished two things:
+
+Ensured that the data received from the server is in a predictable and
+understandable order.
+Protected the client and server from being overwhelmed by a large amount of
+data (the page size puts a cap on the amount of data that can be returned in
+a single response).
+*/
